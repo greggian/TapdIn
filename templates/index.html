@@ -1,0 +1,39 @@
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+		<title>TapdIn</title>
+		<link href="/static/tree.css" rel="stylesheet" type="text/css" />
+	</head>
+
+	<body>
+
+		{% include "header.html" %}
+		{% include "leftnav.html" %}
+
+
+		<div class="content">
+			<div class="title">
+				<h1>"What's on Tap?!"<span class="small"> - you, before us</span></h1>
+			</div>
+
+			We want to help you and all your friends answer "What's on Tap?" or
+			if you are the choosy type, "Where's MY beer on tap?". 
+
+			<br>
+			<br>
+			<br>
+
+                        <form action="search/" method="get">
+                                <label for="search_input">Bars and Beers:</label>
+                                <input type="text" id="search_input" name="q"></input>
+                                <input type="submit" value="Search" title="Search"></input>
+                        </form>
+
+			<div>
+				<h3>Recent Updates</h3>
+				{% include "recentbars.html" %}
+			</div>
+		</div>
+		{% include "footer.html" %}
+	</body>
+</html>

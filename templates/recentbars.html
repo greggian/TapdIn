@@ -1,0 +1,12 @@
+
+<ul>
+{% for bar in recentbars %}
+	<li class="{% cycle 'odd' 'event' %}">
+	<b><a href="{% url bar bar.key.id %}">{{ bar.name }}</a></b>
+	updated 
+	{{ bar.updated_on|timesince }} ago
+	</li>
+{% empty %}
+	<li>Sorry, no recent bar updates...</li>
+{% endfor %}
+</ul>
