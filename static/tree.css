@@ -10,12 +10,21 @@ a, a:link {
 }
 
 .header {
+	height: 40px;
 	background-color: lightBlue;
 	padding-left: 20px;
 }
 
 .header h1 {
 	margin: 0px;
+}
+
+.logo {
+	float:left;
+}
+
+.useroptions {
+	float:right;
 }
 
 .title {

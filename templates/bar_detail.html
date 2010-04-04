@@ -21,6 +21,13 @@
 		
 			<br/>	
 
+                        {% if user.is_authenticated %}
+                        <form action='/users/{{ user.username }}/bar/' method='post'>
+                                <input type="hidden" name="bar_id" value="{{ bar.key.id }}"></input>
+                                <input type="submit" value="subscribe" title="subscribe"></input>
+                        </form>
+                        {% endif %}
+
 
 			<ul id="beer_list">
                         {% for stockedbeer in bar.get_beer_in_stock %}

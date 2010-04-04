@@ -21,6 +21,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils.encoding import smart_str
 import urllib
+import md5
 
 from django.db.models.manager import EmptyManager
 
@@ -57,6 +58,11 @@ class User(BaseModel):
 
   def __str__(self):
     return unicode(self).encode('utf-8')
+
+  @classmethod
+  def get_by_username(cls, username):
+    query = cls.all().filter("username =", username)
+    return query.get()
 
   @classmethod
   def get_djangouser_for_user(cls, user):
@@ -113,6 +119,13 @@ class User(BaseModel):
 
   def get_absolute_url(self):
     return "/users/%s/" % urllib.quote(smart_str(self.username))
+
+  def get_avatar_url(self):
+    md5hash = md5.new(self.email.lower()).hexdigest()
+    default = 'identicon'
+    size = '80'
+    rating = 'g'
+    return "http://www.gravatar.com/avatar/%s?d=%s&s=%s&r=%s" % (md5hash, default, size, rating)
 
   def get_full_name(self):
     full_name = u'%s %s' % (self.first_name, self.last_name)

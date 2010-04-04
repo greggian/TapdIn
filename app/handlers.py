@@ -4,6 +4,7 @@ import operator
 from django.shortcuts import redirect
 from piston.handler import BaseHandler
 from piston.utils import rc, throttle
+from appengine_django.auth import models as authModels
 from app import models, forms
 
 
@@ -145,3 +146,92 @@ class StockedBeerListHandler(StockedBeerHandler):
 		return {'stockedbeers': bar.get_beer_in_stock()}
 	else:
 		super(models.StockedBeer, self).create(request)
+
+
+
+class UserHandler(BaseHandler):
+    allowed_methods = ('GET')
+    fields = ('resource_uri', 'username')
+    viewname = 'user_detail'
+    model = authModels.User
+
+    def read(self, request, user_id):
+	if user_id:
+		user = authModels.User.get_by_username(user_id)
+		return {'user': user}
+
+
+    @staticmethod
+    def resource_uri(user):
+	user_id = user.username
+        return ('user', [user_id])
+
+
+class BeerSubscriberListHandler(BaseHandler):
+    allowed_methods = ('GET', 'POST')
+    fields = ('resource_uri', 'beer_name')
+    viewname = 'beersubscriber_list'
+    model = models.BeerSubscriber
+
+    def read(self, request, user_id):
+	if user_id:
+		user = authModels.User.get_by_username(user_id)
+		subscribers = user.beersubscriber_set
+		return {'subscribers': subscribers}
+
+    def create(self, request, user_id):
+        beer_id = request.POST['beer_id']
+        if user_id and beer_id:
+                logging.info('user_id: %s | beer_id: %s',user_id, beer_id)
+		user = authModels.User.get_by_username(user_id)
+                beer = models.Beer.get_by_id(int(beer_id))
+                beersubscriber = models.BeerSubscriber(beer=beer, user=user)
+                beersubscriber.update_ref_values()
+                beersubscriber.put()
+
+		subscribers = user.beersubscriber_set
+		return {'subscribers': subscribers}
+        else:
+                logging.info('no user_id or beer_id')
+
+    @staticmethod
+    def resource_uri(beersubscriber):
+	user_id = beersubscriber.user.key().id()
+	beer_id = beersubscriber.beer.key().id()
+        return ('user', [user_id, beer_id])
+
+
+class BarSubscriberListHandler(BaseHandler):
+    allowed_methods = ('GET', 'POST')
+    fields = ('resource_uri', 'bar_name')
+    viewname = 'barsubscriber_list'
+    model = models.BarSubscriber
+
+    def read(self, request, user_id):
+	if user_id:
+		user = authModels.User.get_by_username(user_id)
+		subscribers = user.barsubscriber_set
+		return {'subscribers': subscribers}
+
+    def create(self, request, user_id):
+        bar_id = request.POST['bar_id']
+        if user_id and bar_id:
+                logging.info('user_id: %s | bar_id: %s',user_id, bar_id)
+		user = authModels.User.get_by_username(user_id)
+                bar = models.Bar.get_by_id(int(bar_id))
+                barsubscriber = models.BarSubscriber(bar=bar, user=user)
+                barsubscriber.update_ref_values()
+                barsubscriber.put()
+
+		subscribers = user.barsubscriber_set
+		return {'subscribers': subscribers}
+        else:
+                logging.info('no user_id or bar_id')
+
+    @staticmethod
+    def resource_uri(barsubscriber):
+	user_id = barsubscriber.user.key().id()
+	bar_id = barsubscriber.bar.key().id()
+        return ('user', [user_id, bar_id])
+
+

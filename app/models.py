@@ -1,6 +1,7 @@
 import re
 from google.appengine.ext import db
 from appengine_django.models import BaseModel
+from appengine_django.auth.models import User
 from django.db import models
 from geo.geomodel import GeoModel
 
@@ -104,3 +105,34 @@ class StockedBeer(BaseModel):
 	def update_ref_values(self):
 		self.beer_name = self.beer.name
 		self.bar_name = self.bar.name
+
+
+
+class BeerSubscriber(BaseModel):
+	user = db.ReferenceProperty(User, required=True)
+	user_name = db.StringProperty()
+
+	beer = db.ReferenceProperty(Beer, required=True)
+	beer_name = db.StringProperty()
+
+	added_on = db.DateTimeProperty(auto_now_add=True)
+	
+	def update_ref_values(self):
+		self.user_name = self.user.username
+		self.beer_name = self.beer.name
+
+
+
+class BarSubscriber(BaseModel):
+	user = db.ReferenceProperty(User, required=True)
+	user_name = db.StringProperty()
+
+	bar = db.ReferenceProperty(Bar, required=True)
+	bar_name = db.StringProperty()
+
+	added_on = db.DateTimeProperty(auto_now_add=True)
+	
+	def update_ref_values(self):
+		self.user_name = self.user.username
+		self.bar_name = self.bar.name
+

@@ -1,5 +1,6 @@
 from django import forms
 from django.shortcuts import render_to_response
+from django.template import RequestContext
 from google.appengine.ext import db
 from app import models, forms
 
@@ -7,7 +8,9 @@ import logging
 
 def index(request):
 	recentBars = models.Bar.get_recently_updated(10)
-	return render_to_response('index.html', {'recentbars': recentBars})
+	return render_to_response('index.html', 
+		{'recentbars': recentBars},
+		context_instance=RequestContext(request))
 
 def viewBar(request, id):
 	bar = models.Bar.get_by_id(int(id))

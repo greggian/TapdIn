@@ -26,6 +26,10 @@ stockedbeer_list_resource = resource.Resource(handler=handlers.StockedBeerListHa
 
 search_resource = resource.Resource(handler=handlers.SearchHandler)
 
+user_resource = resource.Resource(handler=handlers.UserHandler)
+beersubscriber_list_resource = resource.Resource(handler=handlers.BeerSubscriberListHandler)
+barsubscriber_list_resource = resource.Resource(handler=handlers.BarSubscriberListHandler)
+
 urlpatterns = patterns('',
 	(r'^$', 'app.views.index'),
 	(r'^addBar/$', 'app.views.addBar'),
@@ -35,6 +39,10 @@ urlpatterns = patterns('',
 	(r'^fixBars/$', 'app.views.fixBars'),
 
 	url(r'^search/(?P<query>[^/]+)?/?$', search_resource, name='search'),
+	
+	url(r'^users/(?P<user_id>[^/]+)/$', user_resource, name='user'),
+	url(r'^users/(?P<user_id>[^/]+)/beer/$', beersubscriber_list_resource),
+	url(r'^users/(?P<user_id>[^/]+)/bar/$', barsubscriber_list_resource),
 
 	url(r'^bar/(?P<bar_id>[^/]+)/$', bar_resource, name='bar'),
 	url(r'^bar/$', bar_list_resource),

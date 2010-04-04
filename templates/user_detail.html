@@ -1,0 +1,55 @@
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+		<title>TapdIn</title>
+		<link href="/static/tree.css" rel="stylesheet" type="text/css" />
+	</head>
+	<body>
+
+		{% include "header.html" %}
+		{% include "leftnav.html" %}
+
+
+		<div class="content">
+			<div id="message_pane"></div>
+			<div class="title">
+				<h1>
+				<img src='{{ user.get_avatar_url }}'/>
+				{{ user.username }}</h1>
+			</div>
+
+			<b>First Name:</b> {{user.first_name}} <br/>
+			<b>Last Name:</b> {{user.last_name}} <br/>
+			<b>Email:</b> {{user.email}} <br/>
+			<b>Member Since:</b> {{user.date_joined|date}} <br/>
+
+
+			<h3>Subscribed Beers</h3>
+                        <ul id="beer_list">
+                        {% for subscribedbeer in user.beersubscriber_set %}
+                                <li class="beer">
+                                        <a href="{{ subscribedbeer.beer.get_absolute_url }}">
+                                                <span class="beername">{{subscribedbeer.beer_name}}</span>
+                                        </a>
+                                         - {{subscribedbeer.added_on|timesince}}
+                                </li>
+                        {% endfor %}
+                        </ul>
+
+			<h3>Subscribed Bars</h3>
+                        <ul id="bar_list">
+                        {% for subscribedbar in user.barsubscriber_set %}
+                                <li class="bar">
+                                        <a href="{{ subscribedbar.bar.get_absolute_url }}">
+                                                <span class="barname">{{subscribedbar.bar_name}}</span>
+                                        </a>
+                                         - {{subscribedbar.added_on|timesince}}
+                                </li>
+                        {% endfor %}
+                        </ul>
+
+
+		</div>
+		{% include "footer.html" %}
+	</body>
+</html>

@@ -14,7 +14,16 @@
 			<div class="title">
 				<h1>{{beer.brewery}} - {{ beer.name }}</h1>
 			</div>
-		url: {{ beer.remote_url }}<br/>
+			url: {{ beer.remote_url }}<br/>
+
+
+			{% if user.is_authenticated %}
+			<form action='/users/{{ user.username }}/beer/' method='post'>
+				<input type="hidden" name="beer_id" value="{{ beer.key.id }}"></input>
+                                <input type="submit" value="subscribe" title="subscribe"></input>
+			</form>
+			{% endif %}
+
 		</div>
 		{% include "footer.html" %}
 	</body>
