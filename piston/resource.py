@@ -16,6 +16,9 @@ from authentication import NoAuthentication
 from utils import coerce_put_post, FormValidationError, HttpStatusCode
 from utils import rc, format_error, translate_mime, MimerDataException
 
+import logging
+
+
 class Resource(object):
     """
     Resource. Create one for your URL mappings, just
@@ -111,6 +114,10 @@ class Resource(object):
                 translate_mime(request)
             except MimerDataException:
                 return rc.BAD_REQUEST
+      
+        # Handle 'tunneling' alternate method over POST 
+        if rm == "POST" and 'method' in request.POST:
+            rm = request.POST['method'].upper()
         
         if not rm in handler.allowed_methods:
             return HttpResponseNotAllowed(handler.allowed_methods)
