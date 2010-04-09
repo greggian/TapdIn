@@ -1,6 +1,7 @@
 import logging
 import re
 import operator
+from google.appengine.ext import db
 from django.shortcuts import redirect
 from piston.handler import BaseHandler
 from piston.utils import rc, throttle
@@ -167,11 +168,40 @@ class UserHandler(BaseHandler):
         return ('user', [user_id])
 
 
+class BeerSubscriberHandler(BaseHandler):
+    allowed_methods = ('GET', 'DELETE')
+    fields = ('resource_uri', 'beer_name')
+    viewname = 'beersubscriber_detail'
+    model = models.BeerSubscriber
+
+    def read(self, request, user_id, beer_id):
+	if user_id:
+		user = authModels.User.get_by_username(user_id)
+                subscriber = user.beersubscriber_set.filter('beer =', db.Key.from_path('Beer', int(beer_id))).get() 
+		return {'subscriber': subscriber}
+
+    def delete(self, request, user_id, beer_id):
+        logging.info('BeerSubscriber.delete')
+        if user_id and beer_id:
+		user = authModels.User.get_by_username(user_id)
+                subscriber = user.beersubscriber_set.filter('beer =', db.Key.from_path('Beer', int(beer_id))).get() 
+                subscriber.delete()
+
+                return rc.DELETED
+        else:
+                return rc.BAD_REQUEST
+
+    @staticmethod
+    def resource_uri(beersubscriber):
+	user_id = beersubscriber.user.username
+	beer_id = beersubscriber.beer.key().id()
+        return ('beersubscriber', [user_id, beer_id])
+
+
+
 class BeerSubscriberListHandler(BaseHandler):
     allowed_methods = ('GET', 'POST')
-    fields = ('resource_uri', 'beer_name')
     viewname = 'beersubscriber_list'
-    model = models.BeerSubscriber
 
     def read(self, request, user_id):
 	if user_id:
@@ -180,6 +210,8 @@ class BeerSubscriberListHandler(BaseHandler):
 		return {'subscribers': subscribers}
 
     def create(self, request, user_id):
+
+        #TODO: check for duplicates before adding
         beer_id = request.POST['beer_id']
         if user_id and beer_id:
                 logging.info('user_id: %s | beer_id: %s',user_id, beer_id)
@@ -189,29 +221,55 @@ class BeerSubscriberListHandler(BaseHandler):
                 beersubscriber.update_ref_values()
                 beersubscriber.put()
 
-		subscribers = user.beersubscriber_set
-		return {'subscribers': subscribers}
+                return rc.CREATED
+		#subscribers = user.beersubscriber_set
+		#return {'subscribers': subscribers}
         else:
                 logging.info('no user_id or beer_id')
+                return rc.BAD_REQUEST
+
+class BarSubscriberHandler(BaseHandler):
+    allowed_methods = ('GET', 'DELETE')
+    fields = ('resource_uri', 'bar_name', 'user_name')
+    viewname = 'barsubscriber_detail'
+    model = models.BarSubscriber
+
+    def read(self, request, user_id, bar_id):
+	if user_id and bar_id:
+		user = authModels.User.get_by_username(user_id)
+                subscriber = user.barsubscriber_set.filter('bar =', db.Key.from_path('Bar', int(bar_id))).get() 
+		return {'subscriber': subscriber}
+
+
+    def delete(self, request, user_id, bar_id):
+        logging.info('BarSubscriber.delete')
+        if user_id and bar_id:
+		user = authModels.User.get_by_username(user_id)
+                subscriber = user.barsubscriber_set.filter('bar =', db.Key.from_path('Bar', int(bar_id))).get() 
+                subscriber.delete()
+
+                return rc.DELETED
+        else:
+                return rc.BAD_REQUEST
 
     @staticmethod
-    def resource_uri(beersubscriber):
-	user_id = beersubscriber.user.key().id()
-	beer_id = beersubscriber.beer.key().id()
-        return ('user', [user_id, beer_id])
+    def resource_uri(barsubscriber):
+	user_id = barsubscriber.user.username
+	bar_id = barsubscriber.bar.key().id()
+        return ('barsubscriber', [user_id, bar_id])
 
 
-class BarSubscriberListHandler(BaseHandler):
+
+class BarSubscriberListHandler(BarSubscriberHandler):
     allowed_methods = ('GET', 'POST')
-    fields = ('resource_uri', 'bar_name')
     viewname = 'barsubscriber_list'
-    model = models.BarSubscriber
 
     def read(self, request, user_id):
 	if user_id:
 		user = authModels.User.get_by_username(user_id)
 		subscribers = user.barsubscriber_set
 		return {'subscribers': subscribers}
+
 
     def create(self, request, user_id):
         bar_id = request.POST['bar_id']
@@ -223,15 +281,11 @@ class BarSubscriberListHandler(BaseHandler):
                 barsubscriber.update_ref_values()
                 barsubscriber.put()
 
-		subscribers = user.barsubscriber_set
-		return {'subscribers': subscribers}
+                return rc.CREATED
+		#subscribers = user.barsubscriber_set
+		#return {'subscribers': subscribers}
         else:
                 logging.info('no user_id or bar_id')
-
-    @staticmethod
-    def resource_uri(barsubscriber):
-	user_id = barsubscriber.user.key().id()
-	bar_id = barsubscriber.bar.key().id()
-        return ('user', [user_id, bar_id])
+                return rc.BAD_REQUEST
 
 

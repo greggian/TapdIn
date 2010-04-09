@@ -28,7 +28,9 @@ search_resource = resource.Resource(handler=handlers.SearchHandler)
 
 user_resource = resource.Resource(handler=handlers.UserHandler)
 beersubscriber_list_resource = resource.Resource(handler=handlers.BeerSubscriberListHandler)
+beersubscriber_resource = resource.Resource(handler=handlers.BeerSubscriberHandler)
 barsubscriber_list_resource = resource.Resource(handler=handlers.BarSubscriberListHandler)
+barsubscriber_resource = resource.Resource(handler=handlers.BarSubscriberHandler)
 
 urlpatterns = patterns('',
 	(r'^$', 'app.views.index'),
@@ -42,7 +44,9 @@ urlpatterns = patterns('',
 	
 	url(r'^users/(?P<user_id>[^/]+)/$', user_resource, name='user'),
 	url(r'^users/(?P<user_id>[^/]+)/beer/$', beersubscriber_list_resource),
+	url(r'^users/(?P<user_id>[^/]+)/beer/(?P<beer_id>[^/]+)/$', beersubscriber_resource, name='beersubscriber'),
 	url(r'^users/(?P<user_id>[^/]+)/bar/$', barsubscriber_list_resource),
+	url(r'^users/(?P<user_id>[^/]+)/bar/(?P<bar_id>[^/]+)/$', barsubscriber_resource, name='barsubscriber'),
 
 	url(r'^bar/(?P<bar_id>[^/]+)/$', bar_resource, name='bar'),
 	url(r'^bar/$', bar_list_resource),

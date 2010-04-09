@@ -136,3 +136,6 @@ class BarSubscriber(BaseModel):
 		self.user_name = self.user.username
 		self.bar_name = self.bar.name
 
+	@models.permalink
+	def get_absolute_url(self):
+        	return ('barsubscriber', [self.user.username, self.bar.key().id()])

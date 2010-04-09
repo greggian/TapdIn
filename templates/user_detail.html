@@ -32,6 +32,10 @@
                                                 <span class="beername">{{subscribedbeer.beer_name}}</span>
                                         </a>
                                          - {{subscribedbeer.added_on|timesince}}
+                                         <form action='./beer/{{subscribedbeer.beer.key.id}}/' method='POST'>
+                                                <input type='hidden' name='method' value='DELETE'/>
+                                                <input type='submit' value='unsubscribe'/>
+                                         </form>
                                 </li>
                         {% endfor %}
                         </ul>
@@ -44,6 +48,10 @@
                                                 <span class="barname">{{subscribedbar.bar_name}}</span>
                                         </a>
                                          - {{subscribedbar.added_on|timesince}}
+                                         <form action='./bar/{{subscribedbar.bar.key.id}}/' method='POST'>
+                                                <input type='hidden' name='method' value='DELETE'/>
+                                                <input type='submit' value='unsubscribe'/>
+                                         </form>
                                 </li>
                         {% endfor %}
                         </ul>
